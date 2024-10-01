@@ -5,11 +5,14 @@ import {
   OneToOne,
   JoinColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { CreatePostMetaOptionsDto } from '../../meta-options/dtos/create-post-meta-options.dto';
 import { postStatus, postType } from '../enums/post.enum';
 import { MetaOptions } from 'src/meta-options/entities/meta-options.entity';
 import { Users } from 'src/users/entities/user.entity';
+import { Tags } from 'src/tags/entities/tags.entity';
 
 @Entity()
 export class Post {
@@ -42,7 +45,10 @@ export class Post {
   featuredImageUrl?: string;
   @Column({ type: 'datetime', nullable: true })
   publishedOn?: Date;
-  tags?: string[];
+
+  @ManyToMany(() => Tags, (tag) => tag.posts)
+  @JoinTable()
+  tags?: Tags[];
   @OneToOne(() => MetaOptions, (metaOption) => metaOption.post, {
     cascade: true,
     eager: true,

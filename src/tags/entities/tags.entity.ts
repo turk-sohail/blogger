@@ -1,8 +1,10 @@
+import { Post } from 'src/post/entities/post.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -27,4 +29,10 @@ export class Tags {
   updateAt: Date;
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ManyToMany(() => Post, (post) => post.tags, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  posts: Post;
 }

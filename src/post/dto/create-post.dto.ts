@@ -37,7 +37,7 @@ export class CreatePostDto {
   schema: string;
   @IsOptional()
   @IsUrl()
-  featuredImage: string;
+  featuredImageUrl: string;
   @IsOptional()
   publishedOn?: Date;
   @IsInt()
@@ -45,8 +45,8 @@ export class CreatePostDto {
   authorId: number;
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  tags?: string[];
+  @IsInt({ each: true })
+  tags?: number[];
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreatePostMetaOptionsDto)
