@@ -6,6 +6,9 @@ import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TagsModule } from './tags/tags.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+const ENV = process.env.NODE_ENV;
 
 @Module({
   imports: [
@@ -13,19 +16,29 @@ import { TagsModule } from './tags/tags.module';
     PostModule,
     AuthModule,
     TagsModule,
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'asd3129760162',
-      database: 'blogger',
-      entities: [],
-      synchronize: true,
-      autoLoadEntities: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: !ENV ? '.env' : `.env.${ENV}`,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: [],
+        synchronize: true,
+        autoLoadEntities: true,
+      }),
     }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(configService: ConfigService) {}
+}
